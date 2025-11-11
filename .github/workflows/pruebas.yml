@@ -31,11 +31,10 @@ jobs:
                 python -m pytest --rootdir . -s
 
             - name: Notify test results
-            if: ${ {failure()} }
-            run: |
-                    echo "Las pruebas automatizadas han fallado. Por favor, revisa los resultados."
-                else:
-                    echo "Todas las pruebas automatizadas han pasado exitosamente." 
+              if: ${{failure()}}
+              run: |
+                        echo "Las pruebas automatizadas han fallado. Por favor, revisa los resultados."
+
 
                 
   
