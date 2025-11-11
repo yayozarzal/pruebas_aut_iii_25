@@ -3,7 +3,6 @@ on:
     pull_request:
         branches:
             - dev
-    
 jobs:
     test_aplication:
         name: Ejecutar pruebas automatizadas
