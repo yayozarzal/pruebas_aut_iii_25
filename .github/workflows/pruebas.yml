@@ -1,5 +1,8 @@
 name: CI PRUEBAS automatizadas (develop)
 on:
+    push:
+        branches:
+            - dev
     pull_request:
         branches:
             - dev

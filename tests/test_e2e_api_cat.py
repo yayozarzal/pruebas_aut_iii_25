@@ -1,30 +1,41 @@
-from unittest.mock import patch
-from app.crud import create_categoria_db
+from fastapi.testclient import TestClient
+from app.main import app
+
+import time
 import json
+client = TestClient(app)
 
-MOCK_DB_DATA = {
-    "categorias": [{"id": 10, "nombre": "Prueba"}],
-    "productos" : []
+def test_e2e_full_categoria_lifecycle():
+        # paso 1 obtener la lista inicial de categorías
+    cat_nombre = f"E2E Categoria {int(time.time())}"
+    respones_get_initial = client.get("/categorias")
+    initial_list = respones_get_initial.json()
+    initial_count = len(initial_list)
+    print ("\nLista inicial de las categorías:\n")
+    print (json.dumps (initial_list, indent=4))
+    print ("--------------------------------------------------- \n")
     
-}
+    print (f"Numero de categorías iniciales: {initial_count}")
+    # paso 2 crear una nueva categoría
+    response_post = client.post(
+        "/categorias", params = {"nombre": cat_nombre})
+    assert response_post.status_code == 200
+    categoria_creada = response_post.json()
+    
+    print (f"\n E2E Categoría creada:\n")
+    print (json.dumps (categoria_creada, indent=4))
+    print ("--------------------------------------------------- \n")
+    
+    #paso 3 verificar que la categoría creada esté en la lista despues del post
+    response_get_final = client.get ("/categorias")
+    lista_final = response_get_final.json()
+    
+    print ("\n E2ELista final de las categorías después de la creación:\n")
+    print (json.dumps (lista_final, indent=4))
+    print (f"numero de categorías finales: {len(lista_final)}")
+    assert len (lista_final) == initial_count + 1
+    assert any (cat["id"] == categoria_creada["id"] for cat in lista_final)
+    
 
-def test_unit_create_categoria_logic():
-    nombre_cat = "categoria unitaria"
-    with patch("app.crud._load_db",  return_value= MOCK_DB_DATA.copy()) as mock_load, \
-         patch("app.crud._save_db") as mock_save:
-         resultado = create_categoria_db(nombre_cat)
-         assert resultado["nombre"] == nombre_cat
-         assert resultado["id"] == 11  # Siguiente ID disponible
-         MOCK_DB_DATA
-         
-         mock_save.assert_called_once()
-         
-         datos_guardados = mock_save.call_args[0][0]
-         
-         print ("\n--- Datos guardados en la base de datos mockeada --- ")
-         print (json.dumps(datos_guardados, indent=4))
-         print ("--------------------------------------------------- \n")
-         
-         assert any(cat['nombre'] == nombre_cat for cat in datos_guardados['categorias'])
-         
+
        
