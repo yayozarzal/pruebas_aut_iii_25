@@ -5,7 +5,7 @@ on:
             - dev
 jobs:
     test_aplication:
-        name: Ejecutar pruebas automatizadas
+        name: Ejecutar pruebas autom
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
